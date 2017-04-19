@@ -22,5 +22,5 @@ VALUES
 (6,'Fractal Design Node 202','Electronics Department',139.99, 200),
 (7,'Apple iPad mini 256gb', 'Electronics Department',199.99, 20),
 (8,'Lacoste Polo', 'Clothing Department', 149.99, 10),
-(9,'Pride and Prejudice andproducts Zombies','Books Department',11.99,10),
+(9,'Pride and Prejudice and Zombies','Books Department',11.99,10),
 (10,'Mamiya 645DF Medium Format DSLR Camera', 'Photography Department',5990.99,5);

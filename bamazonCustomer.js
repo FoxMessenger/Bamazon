@@ -2,28 +2,6 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
 
-// connection.query('INSERT INTO products SET ?', {
-//   flavor: 'Rocky Road',
-//   price: 3.00,
-//   quantity: 50
-// }, function(err, res) {});
-
-// connection.query('UPDATE products SET ? WHERE ?', [{
-//   quantity: 100
-// }, {
-//   flavor: 'Rocky Road'
-// }], function(err, res) {});
-
-// connection.query('DELETE FROM products WHERE ?', {
-//   flavor: 'strawberry'
-// }, function(err, res) {});
-
-// connection.query('SELECT * FROM products', function(err, res) {
-//   if (err) throw err;
-//   console.log(res);
-// });
-
-
 // connecting to the database
 var connection = mysql.createConnection({
     host: 'localhost',

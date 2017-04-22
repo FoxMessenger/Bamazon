@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/FoxMessenger/Bamazon/issues"
   },
-  "homepage": "https://github.com/FoxMessenger/Bamazon#readme"
+  "homepage": "https://github.com/FoxMessenger/Bamazon#readme",
+  "dependencies": {
+    "inquirer": "^3.0.6",
+    "mysql": "^2.13.0"
+  },
+  "devDependencies": {}
 }

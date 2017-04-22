@@ -38,6 +38,12 @@ console.reset = function() {
 
 };
 
+// =========================
+
+// INITIAL START AND RESTART
+
+// =========================
+
 // start the app
 function startApp() {
     var query = {};
@@ -46,6 +52,24 @@ function startApp() {
     var price = '';
     initialQuestions(); // this will initialize the app
 }
+// restart the query
+function restartQuery() {
+    inquirer.prompt([{
+        type: 'confirm',
+        message: 'Would you like to purchase another item?',
+        name: 'confirm',
+        default: true
+    }]).then(function(choice) {
+        if (choice.confirm) {
+            startApp();
+        } else {
+            console.reset();
+            end();
+        }
+    })
+    
+} 
+
 
 // ============
 // DISPLAY DATA
@@ -108,8 +132,8 @@ function initialQuestions() {
                 console.log('requested ' + answer.amount);
 
                 if (answer.amount <= stock) {
-                    var updateFrom = 'UPDATE products SET stock_quantity = ?';
-                    
+                    var updateFrom = 'UPDATE products SET stock_quantity = stock_quantity - ' + answer.amount + ' WHERE ?';
+                    // I don't know if I need to connect again, as I already have an open connection, but better safe than sorry.
                     connection.query(updateFrom, [(stock - answer.amount)], function(err, res) {
                         if (err) {
                             console.log(err);
@@ -128,6 +152,7 @@ function initialQuestions() {
                         	}]).then(function(choice) {
                                 if (choice.confirm) {
                                     startApp();
+                                    end();
                                 } else {
                                     console.reset();
                                     end();

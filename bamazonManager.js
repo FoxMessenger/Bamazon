@@ -14,13 +14,12 @@ var connection = mysql.createConnection({
 // connect to the server
 connection.connect(function(err) {
     if (err) throw err;
-    console.log('connected...');
 });
 
 // ending the connection
 var end = function() {
     connection.end(function(err) {
-        // The connection is terminated now
+    // The connection is terminated now
     });
 }
 
@@ -28,24 +27,60 @@ var end = function() {
 console.reset = function() {
     console.log('');
     console.log('');
-    console.log('no worries, maybe next time. Goodbye.')
+    console.log('Goodbye.')
     console.log('');
     console.log('');
 
+    // this function waits a minute and then inputs 'ctrl + L', or 'clear' in the console
     setTimeout(function() {
         return process.stdout.write('\033c');
     }, 1000);
 
 };
 
+
+
+// ===================================
+//
+// INITIAL START AND RESTART FUNCTIONS
+//
+// ===================================
+
+// this must be a global variable or it doesn't work
+// select all items from my products 
+var dataList = 'SELECT * FROM products';
+
+
 // start the app
 function startApp() {
-    var query = {};
-    var dataList = '';
-    var stock = '';
-    var price = '';
+    
+    // var query = {};
+    // var stock = '';
+    // var price = '';
     initialQuestions(); // this will initialize the app
+
 }
+
+// restart the query
+function restartQuery() {
+    inquirer.prompt([
+    	{
+	        type: 'confirm',
+	        message: 'Would you like to view the list again?',
+	        name: 'confirm',
+	        default: true
+    	}
+    ]).then(function(choice) {
+        if (choice.confirm) {
+            startApp();
+            end();
+        } else {
+            console.reset();
+            end();
+        }
+    })
+    
+} 
 
 // ============
 // DISPLAY DATA
@@ -53,117 +88,192 @@ function startApp() {
 
 // prompt questions
 function initialQuestions() {
+	// prompt a series of questions
+ 	inquirer.prompt([
 
- inquirer.prompt([
     	{
             name: 'menu',
             type: 'list',
-            choices: ['View Products for Sale', 'View low Inventory', 'Add to Inventory', 'Add new Product'],
-            message: 'What would you like to do: '
-
+            message: 'What would you like to do: ',
+            choices: ['View Products for Sale', 'View low Inventory', 'Add to Inventory', 'Add new Product']
         },
-        // {
-        //     type: 'input',
-        //     message: 'How many would you like to purchase? ',
-        //     name: 'amount',
-        //     validate: function(val) {
-        //         if (isNaN(val) === false) {
-        //             return true;
-        //         }
-        //         return false;
-        //     }
-        // }
-
-            // WE WANT TO GRAB THIS INFORMATION AND MODIFY OUR TABLES
 
     ]).then(function(choice) {
+		
+		//switch case for the options
 		switch(choice.menu) {
 			case 'View Products for Sale':
-				// console.log('This is the basic promp!')
-				productList();
+				
+				listOfProducts();
+
 			break;
 
 			case 'View low Inventory':
-				viewLowInventory()
-				// cloze.prompt('This is the cloze prompt!');
+				
+				viewLowInventory();
+				
 			break;
 			
 			case 'Add to Inventory':
-				addToInventory()
-				// cloze.prompt('This is the cloze prompt!');
+				
+				addToInventory();
+				
 			break;
 
 			case 'Add new Product':
-				addNewProduct()
-				// cloze.prompt('This is the cloze prompt!');
+				
+				addNewProduct();
+				
 			break;
 		}
 	})
 }
 
-// ============
-// SWITCH CASES
-// ============
+// =============================== //
+// 			SWITCH CASES
+// =============================== //
     
-
-function productList() {
-	dataList = 'SELECT * FROM products';
+// -----------------
+// VIEW PRODUCT LIST
+// -----------------
+function listOfProducts() {
+	// connect to the database and use the global variable dataList
     query = connection.query(dataList, function(err, res) {	
-    	function listOfProducts() {
-            var choiceArray = [];
-            for (var i = 0; i < res.length; i++) {
-                choiceArray.push(res[i].product_name);
-            }
-            
-            console.log(choiceArray);
-    	}
+        // create an empty array to store the data in
+        var choiceArray = [];
+        // run a for loop to get all the data from the database
+        for (var i = 0; i < res.length; i++) {
+        	// push that data to our empty aray
+            choiceArray.push(
+            	// display of information to screen
+            	'ID#' + res[i].item_id + ', ' +
+            	res[i].product_name + ' ' + 
+            	'[$' + res[i].price + ']' +
+            	' [stock: ' + res[i].stock_quantity + ']'
 
-    	listOfProducts()
-    	
+            );
+        }
+        // display our information
+        console.log(choiceArray);
+        // close our connection
+        end();
+        // once done ask if they'd like to do anything else
+        restartQuery();
+
     })
-
-    
-
 }
 
-     
-     //    console.log('in stock: ' + stock);
-     //    console.log('requested ' + answer.amount);
+// ------------------
+// VIEW LOW INVENTORY
+// ------------------
+function viewLowInventory() {
 
-     //    if (answer.amount <= stock) {
-     //        var updateFrom = 'UPDATE products SET stock_quantity = ?';
+	lowInventoryList();
+    
+    function lowInventoryList() {
+    	// open a connection to the database
+	    query = connection.query(dataList, function(err, res) {	
+            // create an empty array
+            var choiceArray = [];
             
-     //        connection.query(updateFrom, [(stock - answer.amount)], function(err, res) {
-     //            if (err) {
-     //                console.log(err);
-     //            } else {
-     //                console.log((stock - answer.amount) + ' left in stock.');
-     //                console.log('That will be ' + '$' + (price * answer.amount) + '.');
-     //            }
-     //            answerAmountQuery()
-     //            // after
-     //            function answerAmountQuery() {
-     //                inquirer.prompt([{
-     //                    type: 'confirm',
-     //                    message: 'Would you like to purchase another item?',
-     //                    name: 'confirm',
-     //                    default: true
-     //            	}]).then(function(choice) {
-     //                    if (choice.confirm) {
-     //                        startApp();
-     //                    } else {
-     //                        console.reset();
-     //                        end();
-     //                    }
-     //                })
-                    
-     //            } 
+            for (var i = 0; i < res.length; i++) {
+                if (res[i].stock_quantity < 5) {
+                	console.log(
+                		// display only the ID and product name of low stock items
+                		'ID#' + res[i].item_id + ' ' + 
+                		res[i].product_name + ' is low in stock.'
 
-     //        })
-    	// } else {
-     //    	console.log('Sorry, we don\'t have enough');
-     //    }
-    // })
-// }
+                	)
+                }
+			
+            }
+			// close our connection
+            end();
+            // ask if they want to do anything else
+            restartQuery();
+	    })
+	}
+}
+
+// ------------------
+// ADD MORE INVENTORY
+// ------------------
+
+function addToInventory(){
+	// var addToDatabase = 'SELECT' 
+
+	query = connection.query(dataList, function(err, res) {	
+		if (err) throw err;
+
+		var chosenItem;
+
+		inquirer.prompt([
+			{
+				name: 'stockincrease',
+				type:'list',
+				message: 'Which item would you like to add stock to?',
+				choices: function(){                         
+					var choiceArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                        choiceArray.push(res[i].product_name);
+                    }
+                    
+                    return choiceArray;                
+            	}
+			},
+        	{
+		        type: 'confirm',
+		        message: 'Are you sure',
+		        name: 'confirm',
+		        default: true
+    		}
+		]).then(function(choice){
+				for (var i = 0; i < res.length; i++) {
+	                if (res[i].product_name === choice.stockincrease) {
+	                    chosenItem = res[i];
+	                }
+	            }
+      
+				if (choice.confirm) {
+			        howMuch();
+		        } else {
+		            addToInventory();
+		        }
+	    })
+
+		function howMuch(){
+			inquirer.prompt([
+				{
+					type: 'input',
+					name: 'addedamount',
+					message: 'How much would you like to add?'
+
+				}
+			]).then(function(answer){
+				var updateFrom = 'UPDATE products SET stock_quantity = stock_quantity + ' + answer.addedamount + ' WHERE ?';
+				var stock = chosenItem.stock_quantity;
+
+				connection.query(updateFrom, [stock], function(err, res) {
+                    if (err) {
+                        console.log(err);
+                    } else if (answer.addedamount < 2) {
+						console.log('We\'ve added ' + answer.addedamount + ' ' + chosenItem.product_name + ' order.' );	
+					} else {
+						console.log('We\'ve added ' + answer.addedamount + ' ' + chosenItem.product_name + ' orders.' );
+					}
+
+					console.log(chosenItem.stock_quantity);
+					restartQuery();
+					end();
+				})
+			})
+		}
+
+	});
+}
+
+function addNewItem(){
+	console.log('add a new item!')
+}
 
 startApp();

@@ -1,3 +1,7 @@
+// Functions work first time around
+// second run through the `.length` of `res` can no longer becomes undefined.
+// not sure why this err occurs
+
 // the required variables
 var mysql = require('mysql');
 var inquirer = require('inquirer');
@@ -109,7 +113,6 @@ function initialQuestions() {
 			break;
 
 			case 'View low Inventory':
-				
 				viewLowInventory();
 				
 			break;
@@ -121,7 +124,6 @@ function initialQuestions() {
 			break;
 
 			case 'Add new Product':
-				
 				addNewProduct();
 				
 			break;
@@ -152,11 +154,14 @@ function listOfProducts() {
             	' [stock: ' + res[i].stock_quantity + ']'
 
             );
+
         }
         // display our information
         console.log(choiceArray);
+        
         // close our connection
         end();
+        
         // once done ask if they'd like to do anything else
         restartQuery();
 
@@ -272,8 +277,9 @@ function addToInventory(){
 	});
 }
 
-function addNewItem(){
-	console.log('add a new item!')
+function addNewProduct(){
+	console.log('The add a new item function currently offline.')
+	end();
 }
 
 startApp();

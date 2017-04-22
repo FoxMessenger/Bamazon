@@ -5,6 +5,7 @@
 // the required variables
 var mysql = require('mysql');
 var inquirer = require('inquirer');
+var query;
 
 // connecting to the database
 var connection = mysql.createConnection({
@@ -15,14 +16,11 @@ var connection = mysql.createConnection({
     database: 'Bamazon'
 });
 
-// connect to the server
-connection.connect(function(err) {
-    if (err) throw err;
-});
 
-// ending the connection
+// Function to end the connection
 var end = function() {
     connection.end(function(err) {
+    	console.log('connection has ended...')
     // The connection is terminated now
     });
 }
@@ -57,15 +55,12 @@ var dataList = 'SELECT * FROM products';
 
 // start the app
 function startApp() {
-    
-    // var query = {};
-    // var stock = '';
-    // var price = '';
+
     initialQuestions(); // this will initialize the app
 
 }
 
-// restart the query
+// restart the original prompt query
 function restartQuery() {
     inquirer.prompt([
     	{
@@ -77,7 +72,6 @@ function restartQuery() {
     ]).then(function(choice) {
         if (choice.confirm) {
             startApp();
-            end();
         } else {
             console.reset();
             end();
@@ -92,6 +86,7 @@ function restartQuery() {
 
 // prompt questions
 function initialQuestions() {
+
 	// prompt a series of questions
  	inquirer.prompt([
 
@@ -108,8 +103,7 @@ function initialQuestions() {
 		switch(choice.menu) {
 			case 'View Products for Sale':
 				
-				listOfProducts();
-
+				productsForSale();
 			break;
 
 			case 'View low Inventory':
@@ -138,10 +132,14 @@ function initialQuestions() {
 // -----------------
 // VIEW PRODUCT LIST
 // -----------------
-function listOfProducts() {
+function productsForSale() {
 	// connect to the database and use the global variable dataList
-    query = connection.query(dataList, function(err, res) {	
-        // create an empty array to store the data in
+	// the second run of this causes an error where `res` cannot be read.
+    var productForSaleQuery = connection.query(dataList, function(err, res) {
+    	if (err) {
+    		console.log('err is ' + err);
+    	}	
+        
         var choiceArray = [];
         // run a for loop to get all the data from the database
         for (var i = 0; i < res.length; i++) {
@@ -152,21 +150,14 @@ function listOfProducts() {
             	res[i].product_name + ' ' + 
             	'[$' + res[i].price + ']' +
             	' [stock: ' + res[i].stock_quantity + ']'
-
             );
-
-        }
+        };
         // display our information
         console.log(choiceArray);
-        
-        // close our connection
-        end();
-        
-        // once done ask if they'd like to do anything else
-        restartQuery();
 
-    })
-}
+        restartQuery();
+    });
+};
 
 // ------------------
 // VIEW LOW INVENTORY
@@ -177,7 +168,7 @@ function viewLowInventory() {
     
     function lowInventoryList() {
     	// open a connection to the database
-	    query = connection.query(dataList, function(err, res) {	
+	    var lowInventoryListquery = connection.query(dataList, function(err, res) {	
             // create an empty array
             var choiceArray = [];
             
@@ -192,8 +183,7 @@ function viewLowInventory() {
                 }
 			
             }
-			// close our connection
-            end();
+
             // ask if they want to do anything else
             restartQuery();
 	    })
@@ -207,7 +197,7 @@ function viewLowInventory() {
 function addToInventory(){
 	// var addToDatabase = 'SELECT' 
 
-	query = connection.query(dataList, function(err, res) {	
+	var addToInventoryQuery = connection.query(dataList, function(err, res) {	
 		if (err) throw err;
 
 		var chosenItem;
@@ -247,6 +237,7 @@ function addToInventory(){
 	    })
 
 		function howMuch(){
+			// currently the function updates all quantity in all fields instead of just the chosen one.
 			inquirer.prompt([
 				{
 					type: 'input',
@@ -257,6 +248,7 @@ function addToInventory(){
 			]).then(function(answer){
 				var updateFrom = 'UPDATE products SET stock_quantity = stock_quantity + ' + answer.addedamount + ' WHERE ?';
 				var stock = chosenItem.stock_quantity;
+				console.log(JSON.stringify(chosenItem) + ' ' + stock)
 
 				connection.query(updateFrom, [stock], function(err, res) {
                     if (err) {
@@ -269,7 +261,6 @@ function addToInventory(){
 
 					console.log(chosenItem.stock_quantity);
 					restartQuery();
-					end();
 				})
 			})
 		}
@@ -279,7 +270,7 @@ function addToInventory(){
 
 function addNewProduct(){
 	console.log('The add a new item function currently offline.')
-	end();
+    restartQuery();
 }
 
 startApp();

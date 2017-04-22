@@ -252,13 +252,19 @@ function addToInventory(){
 
 				connection.query(updateFrom, [stock], function(err, res) {
                     if (err) {
-                        console.log(err);
-                    } else if (answer.addedamount < 2) {
-						console.log('We\'ve added ' + answer.addedamount + ' ' + chosenItem.product_name + ' order.' );	
-					} else {
-						console.log('We\'ve added ' + answer.addedamount + ' ' + chosenItem.product_name + ' orders.' );
-					}
 
+                        console.log(err);
+                    
+                    } else if (answer.addedamount < 2) {
+					
+						console.log('We\'ve added ' + answer.addedamount + ' ' + chosenItem.product_name + ' order.' );	
+					
+					} else {
+					
+						console.log('We\'ve added ' + answer.addedamount + ' ' + chosenItem.product_name + ' orders.' );
+					
+					}
+					
 					console.log(chosenItem.stock_quantity);
 					restartQuery();
 				})

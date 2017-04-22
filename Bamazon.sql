@@ -24,3 +24,4 @@ VALUES
 (8,'Lacoste Polo', 'Clothing Department', 149.99, 10),
 (9,'Pride and Prejudice and Zombies','Books Department',11.99,10),
 (10,'Mamiya 645DF Medium Format DSLR Camera', 'Photography Department',5990.99,5);
+
